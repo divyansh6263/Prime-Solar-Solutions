@@ -1,8 +1,8 @@
-// Prime Solar Solution - Application Logic
+// Prime Solar Solutions - Application Logic
 
 // 1. MOCK DATA DEFINITIONS (Default database state)
 const DEFAULT_SETTINGS = {
-    brandName: "Prime Solar Solution",
+    brandName: "Prime Solar Solutions",
     email: "divyansh62soni@gmail.com",
     phone: "+91 82239 13807",
     address: "102 Solar Arcade, Green Energy Park, India",
@@ -118,7 +118,7 @@ class Database {
         const data = localStorage.getItem("prime_solar_settings");
         return data ? JSON.parse(data) : DEFAULT_SETTINGS;
     }
-    
+
     static saveSettings(settings) {
         localStorage.setItem("prime_solar_settings", JSON.stringify(settings));
     }
@@ -176,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Self-healing check for brand name updates
     let settings = Database.getSettings();
     if (settings.brandName === "Prime Solar") {
-        settings.brandName = "Prime Solar Solution";
+        settings.brandName = "Prime Solar Solutions";
         Database.saveSettings(settings);
     }
 
@@ -216,7 +216,7 @@ function initRouter() {
                 // Show Auth Login view, Hide Workspace
                 document.getElementById("admin-auth-container").classList.remove("hidden");
                 document.getElementById("admin-workspace-container").classList.add("hidden");
-                
+
                 // Remove active classes
                 navLinks.forEach(link => link.classList.remove("active"));
                 const adminNavLink = document.getElementById("admin-nav-link");
@@ -231,7 +231,7 @@ function initRouter() {
                 // Scroll to top
                 window.scrollTo({ top: 0 });
                 renderAdminPanel();
-                
+
                 // Mark Admin link as active and ensure visible
                 const adminLink = document.getElementById("admin-nav-link");
                 if (adminLink) {
@@ -244,7 +244,7 @@ function initRouter() {
             adminView.classList.add("hidden");
             publicView.classList.remove("hidden");
             footer.classList.remove("hidden"); // Show footer on public pages
-            
+
             // Map sub-hashes to active state links
             if (hash.startsWith("#calculator")) {
                 document.querySelector('[data-section="calculator"]').classList.add("active");
@@ -266,7 +266,7 @@ function initRouter() {
 
     // Simple smooth routing for landing page links
     document.querySelectorAll(".nav-link:not(.admin-btn)").forEach(anchor => {
-        anchor.addEventListener("click", function(e) {
+        anchor.addEventListener("click", function (e) {
             const href = this.getAttribute("href");
             if (href.startsWith("#") && href !== "#/") {
                 e.preventDefault();
@@ -292,7 +292,7 @@ function initRouter() {
 function initTheme() {
     const themeToggleBtn = document.getElementById("theme-toggle");
     const body = document.body;
-    
+
     // Load theme from localStorage
     const savedTheme = localStorage.getItem("prime_solar_theme") || "light";
     if (savedTheme === "light") {
@@ -363,7 +363,7 @@ function initCalculator() {
         // Average unit price: INR = ₹8/kWh, USD = $0.15/kWh
         const kwhPrice = currency === "INR" ? 8 : 0.15;
         const monthlyKwh = bill / kwhPrice;
-        
+
         // Solar system sizing formula: (Monthly kWh / 30 days) / (Sun Hours * efficiency factor (approx 75% system yield))
         let recommendedSizekW = (monthlyKwh / 30) / (dailySunHours * 0.75);
         recommendedSizekW = Math.round(recommendedSizekW * 10) / 10; // Round to 1 decimal
@@ -433,7 +433,7 @@ function initCalculator() {
 // 8. SCROLL ANIMATION SYSTEM (Intersection Observer)
 function initScrollAnimations() {
     const animatedElements = document.querySelectorAll(".animate-on-scroll");
-    
+
     const observerOptions = {
         root: null,
         rootMargin: "0px",
@@ -539,7 +539,7 @@ function initContactForm() {
             // Display success UI state
             contactForm.reset();
             successMsg.classList.remove("hidden");
-            
+
             setTimeout(() => {
                 successMsg.classList.add("hidden");
             }, 6000);
@@ -586,7 +586,7 @@ function renderPublicSite() {
     // Hero Text contents
     document.getElementById("hero-title").textContent = settings.heroTitle;
     document.getElementById("hero-subtitle").textContent = settings.heroSubtitle;
-    
+
     // Hero Background image
     const heroBgElem = document.getElementById("hero-bg-elem");
     if (settings.heroBg) {
@@ -690,7 +690,7 @@ function initAdminPortal() {
         item.addEventListener("click", () => {
             const email = item.getAttribute("data-email");
             const result = AuthManager.loginWithGoogle(email);
-            
+
             googleOauthPopup.classList.add("hidden");
 
             if (result.success) {
@@ -785,7 +785,7 @@ function initAdminPortal() {
 
     settingsForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        
+
         const settings = {
             brandName: document.getElementById("settings-brand-name").value,
             email: document.getElementById("settings-email").value,
@@ -797,7 +797,7 @@ function initAdminPortal() {
         };
 
         Database.saveSettings(settings);
-        
+
         // Show status
         settingsSuccessMsg.classList.remove("hidden");
         setTimeout(() => {
@@ -821,10 +821,10 @@ function initAdminPortal() {
     };
 
     // Settings Hero Uploader
-    document.getElementById("hero-bg-upload").addEventListener("change", function() {
+    document.getElementById("hero-bg-upload").addEventListener("change", function () {
         if (this.files && this.files[0]) {
             fileReader(
-                this.files[0], 
+                this.files[0],
                 document.getElementById("settings-hero-bg-preview"),
                 document.getElementById("hero-file-name")
             );
@@ -832,7 +832,7 @@ function initAdminPortal() {
     });
 
     // Products Image Uploader
-    document.getElementById("prod-image-upload").addEventListener("change", function() {
+    document.getElementById("prod-image-upload").addEventListener("change", function () {
         if (this.files && this.files[0]) {
             fileReader(
                 this.files[0],
@@ -843,7 +843,7 @@ function initAdminPortal() {
     });
 
     // Gallery Uploaders
-    document.getElementById("gallery-new-upload").addEventListener("change", function() {
+    document.getElementById("gallery-new-upload").addEventListener("change", function () {
         if (this.files && this.files.length > 0) {
             const files = Array.from(this.files);
             let processed = 0;
@@ -1024,7 +1024,7 @@ function editProduct(productId) {
         document.getElementById("prod-efficiency").value = p.efficiency;
         document.getElementById("prod-price").value = p.price;
         document.getElementById("prod-desc").value = p.desc;
-        
+
         // Show cancel button
         document.getElementById("btn-cancel-edit-product").classList.remove("hidden");
         document.getElementById("product-form-title").textContent = "Modify Product";
@@ -1052,7 +1052,7 @@ function deleteProduct(productId) {
         let products = Database.getProducts();
         products = products.filter(p => p.id !== productId);
         Database.saveProducts(products);
-        
+
         renderAdminProducts();
         renderPublicSite();
     }
@@ -1065,7 +1065,7 @@ function resetProductForm() {
     document.getElementById("product-form-title").textContent = "Add New Product";
     document.getElementById("product-form-desc").textContent = "Provide item characteristics, pricing, efficiency rates, and images to display in the main store listing.";
     document.getElementById("btn-save-product").innerHTML = `<i class="fa-solid fa-circle-plus"></i> Add Product`;
-    
+
     const previewImg = document.getElementById("prod-image-preview");
     previewImg.classList.add("hidden");
     previewImg.src = "";
@@ -1134,7 +1134,7 @@ function deleteLead(index) {
         const leads = Database.getLeads();
         leads.splice(index, 1);
         Database.saveLeads(leads);
-        
+
         renderAdminLeads();
     }
 }

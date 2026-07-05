@@ -1,4 +1,4 @@
-# Prime Solar Solution
+# Prime Solar Solutions
 
 A premium, fully responsive single-page web application (SPA) designed for a solar panel installation and renewable energy systems business. Featuring high-performance scroll animations, an interactive solar energy calculator, and a secure content management admin dashboard.
 
