@@ -2,7 +2,7 @@
 
 // Supabase Connection Settings
 // Fill in your project credentials from your Supabase Dashboard -> Project Settings -> API
-const SUPABASE_URL = ""; 
+const SUPABASE_URL = "https://phtdmkbrzmuhamlmatos.supabase.co"; 
 const SUPABASE_ANON_KEY = ""; 
 
 let supabase = null;
