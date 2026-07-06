@@ -365,6 +365,27 @@ document.addEventListener("DOMContentLoaded", () => {
     // Sync from Supabase in the background if configured
     if (supabaseClient) {
         Database.syncFromSupabase();
+
+        // Subscribe to real-time changes on database tables
+        try {
+            supabaseClient
+                .channel('public-db-changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'settings' }, () => {
+                    console.log("Realtime Update: Settings changed");
+                    Database.syncFromSupabase();
+                })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
+                    console.log("Realtime Update: Products changed");
+                    Database.syncFromSupabase();
+                })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'gallery' }, () => {
+                    console.log("Realtime Update: Gallery changed");
+                    Database.syncFromSupabase();
+                })
+                .subscribe();
+        } catch (e) {
+            console.error("Failed to subscribe to Supabase Realtime:", e);
+        }
     }
 });
 
