@@ -5,13 +5,11 @@
 const SUPABASE_URL = "https://phtdmkbrzmuhamlmatos.supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_cgMg1wg_NKY9Fmbz9XOWtQ_aBFIlzg7"; 
 
-let supabase = null;
+let supabaseClient = null;
 if (SUPABASE_URL && SUPABASE_ANON_KEY) {
     try {
         if (typeof window.supabase !== 'undefined' && typeof window.supabase.createClient === 'function') {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        } else if (typeof supabase !== 'undefined' && typeof supabase.createClient === 'function') {
-            supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         }
     } catch (e) {
         console.error("Failed to initialize Supabase client:", e);
@@ -143,10 +141,10 @@ class Database {
 
     static async saveSettings(settings) {
         localStorage.setItem("prime_solar_settings", JSON.stringify(settings));
-        if (supabase) {
+        if (supabaseClient) {
             try {
                 const payload = { id: 'default', ...settings };
-                await supabase.from('settings').upsert(payload);
+                await supabaseClient.from('settings').upsert(payload);
             } catch (e) {
                 console.error("Failed to save settings to Supabase:", e);
             }
@@ -160,17 +158,17 @@ class Database {
 
     static async saveProducts(products) {
         localStorage.setItem("prime_solar_products", JSON.stringify(products));
-        if (supabase) {
+        if (supabaseClient) {
             try {
                 if (products.length > 0) {
-                    await supabase.from('products').upsert(products);
+                    await supabaseClient.from('products').upsert(products);
                 }
                 const ids = products.map(p => p.id);
                 if (ids.length > 0) {
                     const idList = ids.map(id => `'${id}'`).join(',');
-                    await supabase.from('products').delete().filter('id', 'not.in', `(${idList})`);
+                    await supabaseClient.from('products').delete().filter('id', 'not.in', `(${idList})`);
                 } else {
-                    await supabase.from('products').delete().neq('id', '');
+                    await supabaseClient.from('products').delete().neq('id', '');
                 }
             } catch (e) {
                 console.error("Failed to save products to Supabase:", e);
@@ -185,17 +183,17 @@ class Database {
 
     static async saveGallery(gallery) {
         localStorage.setItem("prime_solar_gallery", JSON.stringify(gallery));
-        if (supabase) {
+        if (supabaseClient) {
             try {
                 if (gallery.length > 0) {
-                    await supabase.from('gallery').upsert(gallery);
+                    await supabaseClient.from('gallery').upsert(gallery);
                 }
                 const ids = gallery.map(item => item.id);
                 if (ids.length > 0) {
                     const idList = ids.map(id => `'${id}'`).join(',');
-                    await supabase.from('gallery').delete().filter('id', 'not.in', `(${idList})`);
+                    await supabaseClient.from('gallery').delete().filter('id', 'not.in', `(${idList})`);
                 } else {
-                    await supabase.from('gallery').delete().neq('id', '');
+                    await supabaseClient.from('gallery').delete().neq('id', '');
                 }
             } catch (e) {
                 console.error("Failed to save gallery to Supabase:", e);
@@ -210,10 +208,10 @@ class Database {
 
     static async saveLeads(leads) {
         localStorage.setItem("prime_solar_leads", JSON.stringify(leads));
-        if (supabase && leads.length > 0) {
+        if (supabaseClient && leads.length > 0) {
             try {
                 const latestLead = leads[0];
-                await supabase.from('leads').insert({
+                await supabaseClient.from('leads').insert({
                     name: latestLead.name,
                     phone: latestLead.phone,
                     email: latestLead.email,
@@ -227,21 +225,21 @@ class Database {
     }
 
     static async syncFromSupabase() {
-        if (!supabase) return;
+        if (!supabaseClient) return;
         try {
             // Fetch Settings
-            const { data: settingsData, error: sErr } = await supabase.from('settings').select('*').eq('id', 'default').maybeSingle();
+            const { data: settingsData, error: sErr } = await supabaseClient.from('settings').select('*').eq('id', 'default').maybeSingle();
             if (!sErr && settingsData) {
                 const { id, ...rest } = settingsData;
                 localStorage.setItem("prime_solar_settings", JSON.stringify(rest));
             } else if (!settingsData) {
                 // Seed empty remote settings table
                 const currentSettings = Database.getSettings();
-                await supabase.from('settings').upsert({ id: 'default', ...currentSettings });
+                await supabaseClient.from('settings').upsert({ id: 'default', ...currentSettings });
             }
 
             // Fetch Products
-            const { data: productsData, error: pErr } = await supabase.from('products').select('*');
+            const { data: productsData, error: pErr } = await supabaseClient.from('products').select('*');
             if (!pErr && productsData && productsData.length > 0) {
                 const cleanProducts = productsData.map(({ created_at, ...rest }) => rest);
                 localStorage.setItem("prime_solar_products", JSON.stringify(cleanProducts));
@@ -249,12 +247,12 @@ class Database {
                 // Seed empty remote products table
                 const currentProducts = Database.getProducts();
                 if (currentProducts.length > 0) {
-                    await supabase.from('products').upsert(currentProducts);
+                    await supabaseClient.from('products').upsert(currentProducts);
                 }
             }
 
             // Fetch Gallery
-            const { data: galleryData, error: gErr } = await supabase.from('gallery').select('*');
+            const { data: galleryData, error: gErr } = await supabaseClient.from('gallery').select('*');
             if (!gErr && galleryData && galleryData.length > 0) {
                 const cleanGallery = galleryData.map(({ created_at, ...rest }) => rest);
                 localStorage.setItem("prime_solar_gallery", JSON.stringify(cleanGallery));
@@ -262,12 +260,12 @@ class Database {
                 // Seed empty remote gallery table
                 const currentGallery = Database.getGallery();
                 if (currentGallery.length > 0) {
-                    await supabase.from('gallery').upsert(currentGallery);
+                    await supabaseClient.from('gallery').upsert(currentGallery);
                 }
             }
 
             // Fetch Leads
-            const { data: leadsData, error: lErr } = await supabase.from('leads').select('*').order('created_at', { ascending: false });
+            const { data: leadsData, error: lErr } = await supabaseClient.from('leads').select('*').order('created_at', { ascending: false });
             if (!lErr && leadsData) {
                 const cleanLeads = leadsData.map(({ created_at, id, ...rest }) => rest);
                 localStorage.setItem("prime_solar_leads", JSON.stringify(cleanLeads));
@@ -357,7 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderPublicSite();
 
     // Sync from Supabase in the background if configured
-    if (supabase) {
+    if (supabaseClient) {
         Database.syncFromSupabase();
     }
 });
@@ -1444,8 +1442,8 @@ function deleteLead(index) {
         leads.splice(index, 1);
         Database.saveLeads(leads);
 
-        if (supabase && leadToDelete) {
-            supabase.from('leads').delete().eq('name', leadToDelete.name).eq('timestamp', leadToDelete.timestamp)
+        if (supabaseClient && leadToDelete) {
+            supabaseClient.from('leads').delete().eq('name', leadToDelete.name).eq('timestamp', leadToDelete.timestamp)
                 .then(({ error }) => {
                     if (error) console.error("Failed to delete lead from Supabase:", error);
                 });
