@@ -301,15 +301,15 @@ class Database {
 
 // 3. CORE APPLICATION INITIALIZATION
 document.addEventListener("DOMContentLoaded", () => {
-    // Check local storage configuration
+    // Check local storage configuration (only update localStorage; do not write to Supabase on load)
     if (!localStorage.getItem("prime_solar_settings")) {
-        Database.saveSettings(DEFAULT_SETTINGS);
+        localStorage.setItem("prime_solar_settings", JSON.stringify(DEFAULT_SETTINGS));
     }
     if (!localStorage.getItem("prime_solar_products")) {
-        Database.saveProducts(DEFAULT_PRODUCTS);
+        localStorage.setItem("prime_solar_products", JSON.stringify(DEFAULT_PRODUCTS));
     }
     if (!localStorage.getItem("prime_solar_gallery")) {
-        Database.saveGallery(DEFAULT_GALLERY);
+        localStorage.setItem("prime_solar_gallery", JSON.stringify(DEFAULT_GALLERY));
     }
 
     // Self-healing check for brand name and settings updates
@@ -347,7 +347,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (updated) {
-        Database.saveSettings(settings);
+        localStorage.setItem("prime_solar_settings", JSON.stringify(settings));
     }
 
     initTheme();
